@@ -1,3 +1,5 @@
-var counter_imported = require('./counter')
+var stuff = require('./stuff')
 
-console.log(counter_imported(['pizza', 'soda', 'burguer']));
+console.log(stuff.counter(['pizza', 'soda', 'burguer']));
+console.log(stuff.adder(1,2));
+console.log('The value of pi is ' + stuff.pi);
