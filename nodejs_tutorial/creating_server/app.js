@@ -1,19 +1,16 @@
 var http = require('http');
 var fs = require('fs');
 
-/*
-myReadStream.on('data', function(chunk){
-  console.log('new chunk received');
-  myWriteStream.write(chunk);
-});
-*/
 
 var server = http.createServer(function(req, res){
   console.log('request was made: '+ req.url);
-  res.writeHead(200, {'Content-type': 'text/html'});
-  var myReadStream = fs.createReadStream(__dirname + '/index.html', 'utf8');
-  myReadStream.pipe(res);
-
+  res.writeHead(200, {'Content-type': 'application/json'});
+  var myObj = {
+    name : 'Dante',
+    job : 'Web dev',
+    age : '21'
+  }
+  res.end(JSON.stringify(myObj));
 });
 
 server.listen(3000, '127.0.0.1');
