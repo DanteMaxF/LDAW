@@ -6,7 +6,8 @@ mongoose.connect('mongodb://test:testtodo1@ds243963.mlab.com:43963/tododb')
 
 // Create a schema - this is like a blueprint
 var todoSchema = new mongoose.Schema({
-  item: String
+  item: String,
+  username: String
 });
 
 var Todo = mongoose.model('Todo', todoSchema);
@@ -19,27 +20,44 @@ module.exports = function(app){
 
   app.get('/todo', function(req, res){
     // Get data from mongoDB and pass it to the view
-    Todo.find({}, function(err, data){
-      if (err) throw err;
-      res.render('todo', {todos: data});
-    });
-
+    if (req.session.username){
+      Todo.find({username: req.session.username}, function(err, data){
+        if (err) throw err;
+        //console.log(req.session.username);
+        res.render('todo', {todos: data, username: req.session.username});
+      });
+    }else{
+      return res.redirect('/login')
+    }
   });
 
   app.post('/todo', urlEncondedParser, function(req, res){
     // Get data from view and add it to mongoDB
-    var newTodo = Todo(req.body).save(function(err, data){
-      if (err) throw err;
-      res.json(data)
-    })
+    if (req.session.username){
+      data = {
+        item: req.body.item,
+        username: req.session.username
+      }
+      console.log(data);
+      var newTodo = Todo(data).save(function(err, data){
+        if (err) throw err;
+        res.json(data)
+      })
+    }else{
+      return res.redirect('/login')
+    }
   });
 
   app.delete('/todo/:item', function(req, res){
     // Delete requested item from mongodb
-    Todo.find({item: req.params.item.replace(/\-/g, " ")}).remove(function(err, data){
-      if (err) throw err;
-      res.json(data);
-    });
+    if (req.session.username){
+      Todo.find({item: req.params.item.replace(/\-/g, " ")}).remove(function(err, data){
+        if (err) throw err;
+        res.json(data);
+      });
+    }else{
+      return res.redirect('/login')
+    }
   });
 
 };

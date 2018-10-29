@@ -1,7 +1,14 @@
 var express = require('express');
-var todoController = require('./controllers/todoController')
+var session = require('express-session');
+var todoController = require('./controllers/todoController');
+var userController = require('./controllers/userController');
 
 var app = express();
+app.use(session({
+  secret:'todoSession',
+  resave: false,
+  saveUninitialized: true
+}));
 
 // setup template engine
 app.set('view engine', 'ejs');
@@ -11,6 +18,7 @@ app.use(express.static('./public'));
 
 // trigger controllers
 todoController(app);
+userController(app);
 
 // listen to port
 app.listen(3000);
